@@ -2,6 +2,7 @@ import './App.css';
 import {  Routes, Route } from "react-router-dom";
 import Login from './screen/Login.screen';
 import Task from './screen/Task.screen';
+import Admin from './screen/Admin.screen';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="*" element={<NoPage />} />  */}
           <Route path="/login" element={<Login />} />
           <Route path="/task" element={<Task />} />
+          <Route path="/admin" element={<Admin />} />
         </Route>
       </Routes>
   );
