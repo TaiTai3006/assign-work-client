@@ -1,29 +1,74 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import ImageUploading from "react-images-uploading";
 import { RiImage2Line } from "react-icons/ri";
 import { MdCancel } from "react-icons/md";
+import { useTask } from "../redux/action/task.action";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import Spinner from "react-bootstrap/Spinner";
+import Alert from 'react-bootstrap/Alert';
 
 const Task = () => {
+  const { getAssignWorkToday, completedTask } = useTask();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const user = queryParams.get("user");
+  console.log(user);
+
+  useEffect(() => {
+    user && getAssignWorkToday(user);
+  }, [location]);
+
+  const assignWorkToday = useSelector((state) => state.assign_task.task_user);
+  const status = useSelector((state) => state.assign_task.loading);
+  const message = useSelector((state) => state.assign_task.message);
+  const error = useSelector((state) => state.assign_task.error);
+  const [assignWorkIndex, setAssignWorkIndex] = useState(0);
+
   const now = new Date();
   const day = now.getDate();
   const month = now.getMonth() + 1;
   const year = now.getFullYear();
 
   const [show, setShow] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const [images, setImages] = useState([]);
+  const [note, setNote] = useState("");
   const maxNumber = 1;
 
   const handleClose = () => {
     setShow(false);
     setImages([]);
   };
-  const handleShow = () => setShow(true);
+  const handleShow = (index) => {
+    setShow(true);
+    setAssignWorkIndex(index);
+  };
+
+  const handleInputChange = (event) => {
+    setNote(event.target.value); // Cập nhật state với giá trị mới
+  };
 
   const onChange = (imageList, addUpdateIndex) => {
     console.log(imageList, addUpdateIndex);
     setImages(imageList);
+  };
+
+  const handleUpload = async (e)  => {
+    e.preventDefault();
+    if (images.length === 0) {
+      alert("Vui lòng chọn một ảnh trước khi tải lên.");
+      return;
+    }
+    await completedTask(images, note, assignWorkToday[assignWorkIndex].id, user);
+
+    setShow(false);
+    setShowMessage(true)
+    setImages([]);
+    setNote("");
+    
   };
 
   return (
@@ -31,14 +76,19 @@ const Task = () => {
       <h1 className="text-center fw-bold">
         Công việc hôm nay ({day}/{month}/{year})
       </h1>
-      {[...new Array(3)].map((index) => (
+      {showMessage && <Alert variant={message ? 'success' : 'danger'} onClose={() => setShowMessage(false)} dismissible>
+        <p>
+        {message ? message : error}
+        </p>
+      </Alert>}
+      {assignWorkToday.map((data, index) => (
         <li
-          style={{cursor: "pointer"}}
+          style={{ cursor: "pointer" }}
           className="fs-3 text-primary text-decoration-underline my-2 "
           key={index}
-          onClick={handleShow}
+          onClick={() => handleShow(index)}
         >
-          cong viec 1
+          {data.taskname}
         </li>
       ))}
 
@@ -50,7 +100,9 @@ const Task = () => {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>
+            {assignWorkToday[assignWorkIndex]?.taskname}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form>
@@ -102,23 +154,36 @@ const Task = () => {
                       <div className="image-item__btn-wrapper"></div>
                     </div>
                   ))}
-                  {images.length === 0 && <p className="text-danger">* Bắt buộc phải thêm ảnh minh chứng.</p>}
+                  {images.length === 0 && (
+                    <p className="text-danger">
+                      * Bắt buộc phải thêm ảnh minh chứng.
+                    </p>
+                  )}
                 </div>
               )}
             </ImageUploading>
 
-            <div class="my-3">
+            <div className="my-3">
               <label
                 for="exampleInputPassword1"
-                class="form-label fs-5 fw-bold"
+                className="form-label fs-5 fw-bold"
               >
                 Ghi chú:
               </label>
-              <input type="text" class="form-control" />
+              <input
+                value={note}
+                onChange={handleInputChange}
+                type="text"
+                className="form-control"
+              />
             </div>
             <div className="d-flex justify-content-end ">
-              <button type="submit" class="btn btn-primary px-4 fs-5 fw-bold">
-                Gửi
+              <button
+                onClick={handleUpload}
+                type="submit"
+                className="btn btn-primary px-4 fs-5 fw-bold"
+              >
+                {status ? <Spinner animation="border" /> : "Gửi"}
               </button>
             </div>
           </form>
