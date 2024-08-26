@@ -13,7 +13,7 @@ export const useLogin = () => {
       dispatch(LOGIN_REQUEST());
 
       axios
-        .post("http://127.0.0.1:8000/login", {
+        .post("https://assign-work-server.vercel.app/login", {
           gmail: gmail,
           token: token,
         })
@@ -30,7 +30,7 @@ export const useLogin = () => {
 
     const checkStatus =  (gmail)=>{
         axios
-        .get(`http://127.0.0.1:8000/login/status?gmail=${gmail}`)
+        .get(`https://assign-work-server.vercel.app/login/status?gmail=${gmail}`)
         .then(function (response) {
           console.log(response.data, 'sdhgfydgf')
           dispatch(CHECK_STATUS(response.data));

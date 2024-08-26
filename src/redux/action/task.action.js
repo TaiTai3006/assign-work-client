@@ -17,7 +17,7 @@ export const useTask = () => {
 
   const getAssignWorkToday = (gmail) => {
     axios
-      .get(`http://127.0.0.1:8000/assgin-task/today/${gmail}`)
+      .get(`https://assign-work-server.vercel.app/assgin-task/today/${gmail}`)
       .then(function (response) {
         console.log(response.data);
         dispatch(TASK_USER(response.data));
@@ -37,7 +37,7 @@ export const useTask = () => {
       
       const downloadURL = await uploadImg(images[0].data_url)
       // Gửi yêu cầu cập nhật task lên server
-      const response = await axios.put(`http://127.0.0.1:8000/assgin-task/${id}`, {
+      const response = await axios.put(`https://assign-work-server.vercel.app/assgin-task/${id}`, {
         img: downloadURL,
         note: note,
       });

@@ -20,7 +20,7 @@ export const useTask = () => {
     dispatch(TASK_REQUEST());
 
     axios
-      .get("http://127.0.0.1:8000/task")
+      .get("https://assign-work-server.vercel.app/task")
       .then(function (response) {
         dispatch(TASK_SUCCESS(response.data));
       })
@@ -34,7 +34,7 @@ export const useTask = () => {
     const img = await uploadImg(data_url)
 
     axios
-      .post("http://127.0.0.1:8000/sendTaskIMG",{
+      .post("https://assign-work-server.vercel.app/sendTaskIMG",{
         img: img
       })
       .then(function (response) {
@@ -53,7 +53,7 @@ export const useTask = () => {
     dispatch(ASSIGN_TASK_REQUEST());
   
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/assgin-task?start=${start}&end=${end}`);
+      const response = await axios.get(`https://assign-work-server.vercel.app/assgin-task?start=${start}&end=${end}`);
       dispatch(ASSIGN_TASK_SUCCESS(response.data));
     } catch (error) {
       dispatch(ASSIGN_TASK_FAIL(error));
@@ -63,7 +63,7 @@ export const useTask = () => {
 
   const updateStatus = (status, id, start, end) => {
     axios
-      .post("http://127.0.0.1:8000/assgin-task/status", {
+      .post("https://assign-work-server.vercel.app/assgin-task/status", {
         status: status,
         id: id,
       })
@@ -78,7 +78,7 @@ export const useTask = () => {
 
   const deleteTask = (id, start, end) => {
     axios
-      .post("http://127.0.0.1:8000/assgin-task/delete", { id: id })
+      .post("https://assign-work-server.vercel.app/assgin-task/delete", { id: id })
       .then(function (response) {
         console.log(response);
         getAssignTask(start, end);
@@ -92,7 +92,7 @@ export const useTask = () => {
     dispatch(USER_REQUEST());
 
     axios
-      .get("http://127.0.0.1:8000/user")
+      .get("https://assign-work-server.vercel.app/user")
       .then(function (response) {
         dispatch(USER_SUCCESS(response.data));
       })
@@ -103,7 +103,7 @@ export const useTask = () => {
 
   const createTask = async (data, start, end) => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/assgin-task", {
+      const response = await axios.post("https://assign-work-server.vercel.app/assgin-task", {
         list: data,
       });
       console.log(response);
